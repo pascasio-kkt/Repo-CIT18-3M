@@ -31,4 +31,4 @@ GET             /itemtask/{id}/edit    edit                      Show the form f
 PUT/PATCH       /itemtask/{id}         update                    Update a specific task
 DELETE          /itemtask/{id}         destroy                   Delete a specific task
 */
-Route::resource('itemtask', ItemTaskController::class);
+Route::resource('itemtasks', ItemTaskController::class);

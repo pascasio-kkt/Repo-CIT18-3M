@@ -11,7 +11,7 @@ class ItemTask extends Model
 {
     use HasFactory;
     
-    protected $table = 'itemtask';
+    protected $table = 'itemtasks';
     
     protected $fillable = [
         'title',

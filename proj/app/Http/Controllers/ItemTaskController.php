@@ -2,69 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ItemTask;
+use App\Models\ItemTask; 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\Redirect;
 
-class ItemTaskController extends Controller
+class ItemTaskController extends Controller 
 {
-    use AuthorizesRequests, ValidatesRequests;
-
-    protected $itemTask;
-
-    public function __construct(ItemTask $itemTask)
-    {
-        $this->itemTask = $itemTask;
-    }
-
     public function index()
     {
-        return ItemTask::query()->get();
+        $itemtasks = ItemTask::all();  
+        return view('itemtask.index', compact('itemtasks'));  
     }
 
     public function create()
     {
-        return view('itemtask.create');
+        return view('itemtask.create'); 
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_completed' => 'boolean'
         ]);
 
-        return $this->itemTask->addItem($validated);
+        $itemtask = ItemTask::create([  
+            'title' => $request->title,
+            'description' => $request->description,
+            'is_completed' => false,
+        ]);
+
+        return redirect()->route('itemtask.index')->with('success', 'Task added successfully!');
     }
 
-    public function show(ItemTask $itemtask)
+    public function show(ItemTask $itemtask)  
     {
-        return $itemtask;
+        return response()->json($itemtask);  
     }
 
-    public function edit(ItemTask $itemtask)
+    public function edit(ItemTask $itemtask)  
     {
         return view('itemtask.edit', compact('itemtask'));
     }
 
-    public function update(Request $request, ItemTask $itemtask)
+    public function update(Request $request, ItemTask $itemtask)  
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
+        $request->validate([
+            'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-            'is_completed' => 'boolean'
+            'is_completed' => 'boolean',
         ]);
 
-        return $this->itemTask->updateItem($itemtask->id, $validated);
+        $itemtask->update($request->all());  
+
+        return Redirect::route('itemtask.index')->with('success', 'Task updated successfully!');
     }
 
-    public function destroy(ItemTask $itemtask)
+    public function destroy(ItemTask $itemtask) 
     {
-        $this->itemTask->deleteItem($itemtask->id);
-        return Response::noContent();
+        $itemtask->delete();  
+        return redirect()->route('itemtask.index')->with('success', 'Task deleted successfully!');
     }
-} 
+}
